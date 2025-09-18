@@ -3,7 +3,7 @@ import { Alert, View } from "react-native";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { CurrencyInput } from "@/components/CurrencyInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { useTargetDatabase } from "@/database/useTargetDatabase";
@@ -46,6 +46,24 @@ export default function Target() {
       setIsProcessing(false)
     }
   }
+
+  async function fetchDetails(id: number) {
+    try {
+      const response = await targetDatabase.show(id)
+      setName(response.name)
+      setAmount(response.amount)
+
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar os detalhes da meta.")
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    if(params.id){
+      fetchDetails(Number(params.id))
+    }
+  }, [params.id])
 
   return (
     <View style={{ flex: 1, padding: 24 }}>
